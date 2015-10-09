@@ -4,3 +4,5 @@
 .idea/modules.xml
 .idea/vcs.xml
 .idea/workspace.xml
+__pycache__/data.cpython-34.pyc
+__pycache__/plot.cpython-34.pyc
