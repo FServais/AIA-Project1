@@ -19,5 +19,17 @@ from plot import plot_boundary
 
 if __name__ == "__main__":
     # (Question 1) dt.py: Decision tree
-    # TODO Your code here
+    number_sample = 2000
+    number_of_samples__train_set = 150
+
+    X, y = make_data(n_samples=number_sample)
+
+    X_train, y_train = X[:number_of_samples__train_set], y[:number_of_samples__train_set]
+    X_test, y_test = X[number_of_samples__train_set:], y[number_of_samples__train_set:]
+
+
+    # 1.
+
+
+
     pass
