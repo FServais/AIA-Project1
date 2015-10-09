@@ -19,17 +19,25 @@ from plot import plot_boundary
 
 if __name__ == "__main__":
     # (Question 1) dt.py: Decision tree
-    number_sample = 2000
-    number_of_samples__train_set = 150
+    SAMPLE_NUMBER = 2000
+    TRAIN_SET_SAMPLE_NUMBER = 150
 
-    X, y = make_data(n_samples=number_sample)
+    X, y = make_data(n_samples=SAMPLE_NUMBER)
 
-    X_train, y_train = X[:number_of_samples__train_set], y[:number_of_samples__train_set]
-    X_test, y_test = X[number_of_samples__train_set:], y[number_of_samples__train_set:]
-
+    X_train, y_train = X[:TRAIN_SET_SAMPLE_NUMBER], y[:TRAIN_SET_SAMPLE_NUMBER]
+    X_test, y_test = X[TRAIN_SET_SAMPLE_NUMBER:], y[TRAIN_SET_SAMPLE_NUMBER:]
 
     # 1.
+    decisionTreeClassifier = DecisionTreeClassifier()
+    decisionTreeClassifier.fit(X_train, y_train)
+    y_dtc = decisionTreeClassifier.predict(X_test)
 
+    # Plot
+    plot_boundary("Reality", decisionTreeClassifier, X_test, y_test, title="Real data")
+    plot_boundary("Result", decisionTreeClassifier, X_test, y_dtc, title="Result data")
+
+
+    # 2.
 
 
     pass
