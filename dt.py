@@ -38,6 +38,14 @@ if __name__ == "__main__":
 
 
     # 2.
+    max_depths = [1, 10, 100, 1000, None]
+    for max_depth in max_depths:
+        decisionTreeClassifier = DecisionTreeClassifier(max_depth=max_depth)
+        decisionTreeClassifier.fit(X_train, y_train)
+        y_dtc = decisionTreeClassifier.predict(X_test)
+
+        # Plot
+        plot_boundary("Reality (%s)" % str(max_depth), decisionTreeClassifier, X_test, y_test, title="Real data (%s)" % str(max_depth))
 
 
     pass
