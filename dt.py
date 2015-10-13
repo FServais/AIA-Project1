@@ -19,7 +19,7 @@ from plot import plot_boundary
 
 if __name__ == "__main__":
     # (Question 1) dt.py: Decision tree
-    SAMPLE_NUMBER = 2000
+    SAMPLE_NUMBER = 1500
     TRAIN_SET_SAMPLE_NUM = 150
 
     X, y = make_data(n_samples=SAMPLE_NUMBER)
