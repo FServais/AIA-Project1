@@ -19,9 +19,21 @@ from plot import plot_boundary
 
 if __name__ == "__main__":
     
-    #Compare two sample of the same size.
-    #Return the number of difference between these two.
     def compare(sampl_predict, sampl_real):
+        """Compare two sample of the same size and return the number of difference.
+
+        Parameters
+        ----------
+        sampl_predict : vector-like, shape (SAMPLE_NUMBER - RAIN_SET_SAMPLE_NUM)
+            prediction samples.
+        sampl_real : vector-like, shape (SAMPLE_NUMBER - RAIN_SET_SAMPLE_NUM)
+            Real samples.
+
+        Returns
+        -------
+        difference : int
+            Number of difference between the two vectors
+        """
         difference = 0
         for i in range(len(sampl_predict)):
             if sampl_predict[i] != sampl_real[i]:
