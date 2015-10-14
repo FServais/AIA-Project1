@@ -9,6 +9,7 @@ from __future__ import unicode_literals
 from __future__ import print_function
 
 import numpy as np
+import random
 
 from sklearn.base import BaseEstimator
 from sklearn.base import ClassifierMixin
@@ -98,4 +99,71 @@ class KNeighborsClassifier(BaseEstimator, ClassifierMixin):
 
 if __name__ == "__main__":
     # (Question 2): K-nearest-neighbors
-    # TODO your code here
+    
+    SAMPLE_NUMBER = 200
+    K = 15 #Random ?
+    x_prime = [0,0] #Random ?
+    
+    dist = [0]*SAMPLE_NUMBER
+    dist_temp = [0]*SAMPLE_NUMBER
+    index_neighbor = [0]*K
+    
+    # FIRST PART
+    X, y = make_data(n_samples=SAMPLE_NUMBER)
+    
+    #1.Compute all the distance with the test value
+    for i in range(SAMPLE_NUMBER):   
+        dist[i] = np.linalg.norm(X[i]-x_prime)
+        dist_temp[i] = np.linalg.norm(X[i]-x_prime)
+    
+    #2.Find the index of the K-nearest-Neighbors
+    for i in range(K):
+        min_temp =  min(dist_temp)        
+        index_neighbor[i] = dist_temp.index(min_temp)
+        dist_temp[index_neighbor[i]] = float('inf')
+        
+    #3.Compute the proportion of sample of each class among 
+    #the k-nearest-neighbor
+    #Works only if there are two classes
+    class0 = 0
+    class1 = 0
+    for i in range(K):
+        if y[index_neighbor[i]]:
+            class1 +=1
+        else:
+            class0 +=1
+            
+    #4.Prediction
+    
+    if class0 > class1:
+        y_prime = 0
+    elif class0 < class1:
+        y_prime = 1
+    else:
+        #if the probability is the same 
+        y_prime = random.randint(0,1)
+        
+        
+        
+    
+        
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
