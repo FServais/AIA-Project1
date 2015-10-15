@@ -18,8 +18,34 @@ from plot import plot_boundary
 
 
 if __name__ == "__main__":
-    # (Question 1) dt.py: Decision tree
+    
+    def compare(sampl_predict, sampl_real):
+        """Compare two sample of the same size and return the number of difference.
 
+        Parameters
+        ----------
+        sampl_predict : vector-like, shape (SAMPLE_NUMBER - RAIN_SET_SAMPLE_NUM)
+            prediction samples.
+        sampl_real : vector-like, shape (SAMPLE_NUMBER - RAIN_SET_SAMPLE_NUM)
+            Real samples.
+
+        Returns
+        -------
+        difference : int
+            Number of difference between the two vectors
+        """
+        difference = 0
+        for i in range(len(sampl_predict)):
+            if sampl_predict[i] != sampl_real[i]:
+                difference += 1
+    
+        return difference
+                
+            
+    
+    
+    # (Question 1) dt.py: Decision tree
+    
     SAMPLE_NUMBER = 2000
     TRAIN_SET_SAMPLE_NUM = 150
 
@@ -39,13 +65,32 @@ if __name__ == "__main__":
 
 
     # 2.
-    max_depths = [1, 10, 50, 100, 1000, None]
+    i = 0
+    
+    max_depths = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 50, 100, 1000, 10000, 100000]#,None]
+    error = [0]*len(max_depths)  
     for max_depth in max_depths:
         decisionTreeClassifier = DecisionTreeClassifier(max_depth=max_depth)
         decisionTreeClassifier.fit(X_train, y_train)
         y_dtc = decisionTreeClassifier.predict(X_test)
+        
+        error[i] = compare(y_dtc,y_test)
+        i += 1
 
         # Plot
         plot_boundary("Reality (%s)" % str(max_depth), decisionTreeClassifier, X_test, y_test, title="Real data (%s)" % str(max_depth))
+        
+
+        
 
     pass
+
+    plt.figure();
+    plt.title("Decision error induces by the model");
+    plt.plot(max_depths,error)
+    plt.xlabel("Value of max_depths");
+    plt.xscale('log');
+    plt.ylabel("Number of errors"); 
+    plt.savefig("max_depth.pdf")
+    
+    
