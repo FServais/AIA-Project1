@@ -14,10 +14,9 @@ from matplotlib import pyplot as plt
 from sklearn.tree import DecisionTreeClassifier
 
 from sklearn import cross_validation
-from sklearn.utils import check_random_state
 
-from data import make_data
 from plot import plot_boundary
+from utils import get_dataset
 
 def compare(sampl_predict, sampl_real):
     """Compare two sample of the same size and return the number of difference.
@@ -44,14 +43,11 @@ def compare(sampl_predict, sampl_real):
 
 if __name__ == "__main__":
 
-    # Fix RandowState
-    random_state = check_random_state(0)
-
     # (Question 1) dt.py: Decision tree
     SAMPLE_NUMBER = 2000
     TRAIN_SET_SAMPLE_NUM = 150
 
-    X, y = make_data(n_samples=SAMPLE_NUMBER, random_state=random_state)
+    X, y, random_state = get_dataset(SAMPLE_NUMBER)
 
     X_train, y_train = X[:TRAIN_SET_SAMPLE_NUM], y[:TRAIN_SET_SAMPLE_NUM]
     X_test, y_test = X[TRAIN_SET_SAMPLE_NUM:], y[TRAIN_SET_SAMPLE_NUM:]
