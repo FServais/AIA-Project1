@@ -17,6 +17,7 @@ from sklearn import cross_validation
 
 from data import make_data
 from plot import plot_boundary
+from utils import load_data
 
 def compare(sampl_predict, sampl_real):
     """Compare two sample of the same size and return the number of difference.
@@ -44,11 +45,10 @@ def compare(sampl_predict, sampl_real):
 if __name__ == "__main__":
 
     # (Question 1) dt.py: Decision tree
-    
-    SAMPLE_NUMBER = 2000
+
     TRAIN_SET_SAMPLE_NUM = 150
 
-    X, y = make_data(n_samples=SAMPLE_NUMBER)
+    X, y = load_data("X_data.npy"), load_data("y_data.npy")
 
     X_train, y_train = X[:TRAIN_SET_SAMPLE_NUM], y[:TRAIN_SET_SAMPLE_NUM]
     X_test, y_test = X[TRAIN_SET_SAMPLE_NUM:], y[TRAIN_SET_SAMPLE_NUM:]
@@ -80,7 +80,7 @@ if __name__ == "__main__":
     # 3.
     plt.figure()
     plt.title("Decision error induces by the model")
-    plt.plot(max_depths,error)
+    plt.plot(max_depths, error)
     plt.xlabel("Value of max_depths")
     plt.xscale('log')
     plt.ylabel("Number of errors")
