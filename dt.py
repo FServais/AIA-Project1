@@ -14,10 +14,10 @@ from matplotlib import pyplot as plt
 from sklearn.tree import DecisionTreeClassifier
 
 from sklearn import cross_validation
+from sklearn.utils import check_random_state
 
 from data import make_data
 from plot import plot_boundary
-from utils import load_data
 
 def compare(sampl_predict, sampl_real):
     """Compare two sample of the same size and return the number of difference.
@@ -44,17 +44,20 @@ def compare(sampl_predict, sampl_real):
 
 if __name__ == "__main__":
 
-    # (Question 1) dt.py: Decision tree
+    # Fix RandowState
+    random_state = check_random_state(0)
 
+    # (Question 1) dt.py: Decision tree
+    SAMPLE_NUMBER = 2000
     TRAIN_SET_SAMPLE_NUM = 150
 
-    X, y = load_data("X_data.npy"), load_data("y_data.npy")
+    X, y = make_data(n_samples=SAMPLE_NUMBER)
 
     X_train, y_train = X[:TRAIN_SET_SAMPLE_NUM], y[:TRAIN_SET_SAMPLE_NUM]
     X_test, y_test = X[TRAIN_SET_SAMPLE_NUM:], y[TRAIN_SET_SAMPLE_NUM:]
 
     # 1.
-    decisionTreeClassifier = DecisionTreeClassifier()
+    decisionTreeClassifier = DecisionTreeClassifier(random_state=random_state)
     decisionTreeClassifier.fit(X_train, y_train)
     y_dtc = decisionTreeClassifier.predict(X_test)
 
@@ -65,10 +68,10 @@ if __name__ == "__main__":
 
     # 2.
 
-    max_depths = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 50, 100, 1000, 10000, 100000]#,None]
+    max_depths = [1, 2, 4, 8, 10, 50, 100, 150]
     error = []
     for max_depth in max_depths:
-        decisionTreeClassifier = DecisionTreeClassifier(max_depth=max_depth)
+        decisionTreeClassifier = DecisionTreeClassifier(random_state=random_state, max_depth=max_depth)
         decisionTreeClassifier.fit(X_train, y_train)
         y_dtc = decisionTreeClassifier.predict(X_test)
         
