@@ -51,7 +51,7 @@ if __name__ == "__main__":
     SAMPLE_NUMBER = 2000
     TRAIN_SET_SAMPLE_NUM = 150
 
-    X, y = make_data(n_samples=SAMPLE_NUMBER)
+    X, y = make_data(n_samples=SAMPLE_NUMBER, random_state=random_state)
 
     X_train, y_train = X[:TRAIN_SET_SAMPLE_NUM], y[:TRAIN_SET_SAMPLE_NUM]
     X_test, y_test = X[TRAIN_SET_SAMPLE_NUM:], y[TRAIN_SET_SAMPLE_NUM:]
