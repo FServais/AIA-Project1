@@ -17,6 +17,7 @@ from sklearn import cross_validation
 
 from plot import plot_boundary
 from utils import get_dataset
+from utils import get_random_state
 
 def compare(sampl_predict, sampl_real):
     """Compare two sample of the same size and return the number of difference.
@@ -47,7 +48,8 @@ if __name__ == "__main__":
     SAMPLE_NUMBER = 2000
     TRAIN_SET_SAMPLE_NUM = 150
 
-    X, y, random_state = get_dataset(SAMPLE_NUMBER)
+    X, y = get_dataset(SAMPLE_NUMBER)
+    random_state = get_random_state()
 
     X_train, y_train = X[:TRAIN_SET_SAMPLE_NUM], y[:TRAIN_SET_SAMPLE_NUM]
     X_test, y_test = X[TRAIN_SET_SAMPLE_NUM:], y[TRAIN_SET_SAMPLE_NUM:]
@@ -64,23 +66,29 @@ if __name__ == "__main__":
 
     # 2.
 
-    max_depths = [1, 2, 4, 8, 10, 50, 100, 150]
-    error = []
+    max_depths = [1] + [i for i in range(20,TRAIN_SET_SAMPLE_NUM,30)] + [TRAIN_SET_SAMPLE_NUM]
     for max_depth in max_depths:
         decisionTreeClassifier = DecisionTreeClassifier(random_state=random_state, max_depth=max_depth)
         decisionTreeClassifier.fit(X_train, y_train)
         y_dtc = decisionTreeClassifier.predict(X_test)
-        
-        error.append(compare(y_dtc, y_test))
 
         # Plot
         plot_boundary("Reality (%s)" % str(max_depth), decisionTreeClassifier, X_test, y_test, title="Real data (%s)" % str(max_depth))
 
     # 3.
+
+    max_depths = [1] + [i for i in range(20,TRAIN_SET_SAMPLE_NUM,5)] + [TRAIN_SET_SAMPLE_NUM]
+    accuracy = []
+    for max_depth in max_depths:
+        decisionTreeClassifier = DecisionTreeClassifier(random_state=random_state, max_depth=max_depth)
+        decisionTreeClassifier.fit(X_train, y_train)
+        y_dtc = decisionTreeClassifier.predict(X_test)
+
+        accuracy.append((SAMPLE_NUMBER-TRAIN_SET_SAMPLE_NUM - compare(y_dtc, y_test))/(SAMPLE_NUMBER-TRAIN_SET_SAMPLE_NUM))
+
     plt.figure()
-    plt.title("Decision error induces by the model")
-    plt.plot(max_depths, error)
-    plt.xlabel("Value of max_depths")
-    plt.xscale('log')
-    plt.ylabel("Number of errors")
-    plt.savefig("error_max_depth.pdf")
+    plt.title("Accuracy on the testing set induced by the model")
+    plt.plot(max_depths, accuracy)
+    plt.xlabel("Value of max_depth")
+    plt.ylabel("Accuracy (%)")
+    plt.savefig("accuracy_max_depth.pdf")
