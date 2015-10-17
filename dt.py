@@ -78,17 +78,17 @@ if __name__ == "__main__":
     # 3.
 
     max_depths = [1] + [i for i in range(20,TRAIN_SET_SAMPLE_NUM,5)] + [TRAIN_SET_SAMPLE_NUM]
-    accuracy = []
+    error = []
     for max_depth in max_depths:
         decisionTreeClassifier = DecisionTreeClassifier(random_state=random_state, max_depth=max_depth)
         decisionTreeClassifier.fit(X_train, y_train)
         y_dtc = decisionTreeClassifier.predict(X_test)
 
-        accuracy.append((SAMPLE_NUMBER-TRAIN_SET_SAMPLE_NUM - compare(y_dtc, y_test))/(SAMPLE_NUMBER-TRAIN_SET_SAMPLE_NUM))
+        error.append((compare(y_dtc, y_test))/(SAMPLE_NUMBER-TRAIN_SET_SAMPLE_NUM))
 
     plt.figure()
-    plt.title("Accuracy on the testing set induced by the model")
-    plt.plot(max_depths, accuracy)
+    plt.title("Error on the testing set induced by the model")
+    plt.plot(max_depths, error)
     plt.xlabel("Value of max_depth")
-    plt.ylabel("Accuracy (%)")
-    plt.savefig("accuracy_max_depth.pdf")
+    plt.ylabel("Error (%)")
+    plt.savefig("error_max_depth.pdf")
