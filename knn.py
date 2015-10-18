@@ -17,6 +17,11 @@ from sklearn.base import ClassifierMixin
 from data import make_data
 from plot import plot_boundary
 
+from utils import get_dataset
+from utils import get_random_state
+
+import operator
+
 def euclidean_distance(p1, p2):
     """Compute the Euclidean distance between 2 points
 
@@ -39,7 +44,7 @@ class KNeighborsClassifier(BaseEstimator, ClassifierMixin):
 
         """
         self.n_neighbors = n_neighbors
-        self.samples = {}
+        self.train_samples = {}
 
     def fit(self, X, y):
         """Fit a k-nn model using the training set (X, y).
@@ -71,9 +76,10 @@ class KNeighborsClassifier(BaseEstimator, ClassifierMixin):
         if y.shape[0] != X.shape[0]:
             raise ValueError("The number of samples differs between X and y")
 
-        # TODO your code here.
-        for i in len(y):
-            self.samples[tuple(X[i])] = y[i]
+        # Save each sample (all variables) and the corresponding class
+        # (var1, var2, ...)_i -> y_i
+        for i in range(0,len(y)):
+            self.train_samples[tuple(X[i])] = y[i]
 
         return self
 
@@ -90,7 +96,30 @@ class KNeighborsClassifier(BaseEstimator, ClassifierMixin):
         y : array of shape = [n_samples]
             The predicted classes, or the predict values.
         """
-        # TODO your code here.
+
+        y = []
+        for test_sample in X:
+            # Compute distances to each sample of the training set
+            distances = {}
+            for train_tuple, y_train in self.train_samples.items():
+                distances[train_tuple] = euclidean_distance(np.array(train_tuple), test_sample)
+
+            # Search k samples with the smallest distances
+            sorted_distances = sorted(distances.items(), key=operator.itemgetter(1))
+            k_nearest = sorted_distances[:self.n_neighbors]
+
+            # Compute proportions for each classes
+            classes = {}
+            for neighb, _ in k_nearest:
+                if self.train_samples[neighb] in classes:
+                    classes[self.train_samples[neighb]] += 1
+                else:
+                    classes[self.train_samples[neighb]] = 1
+
+            # Predict
+            y.append(max(classes, key=classes.get))
+
+        return y
         pass
 
     def predict_proba(self, X):
@@ -112,51 +141,21 @@ class KNeighborsClassifier(BaseEstimator, ClassifierMixin):
 
 if __name__ == "__main__":
     # (Question 2): K-nearest-neighbors
-    
-    SAMPLE_NUMBER = 200
-    K = 15 #Random ?
-    x_prime = [0,0] #Random ?
 
-    dist = [0]*SAMPLE_NUMBER
-    dist_temp = [0]*SAMPLE_NUMBER
-    index_neighbor = [0]*K
+    TRAIN_SET_SAMPLE_NUM = 150
+    X, y = get_dataset(2000)
 
-    # FIRST PART
-    X, y = make_data(n_samples=SAMPLE_NUMBER)
+    X_train, y_train = X[:TRAIN_SET_SAMPLE_NUM], y[:TRAIN_SET_SAMPLE_NUM]
+    X_test, y_test = X[TRAIN_SET_SAMPLE_NUM:], y[TRAIN_SET_SAMPLE_NUM:]
 
-    #1.Compute all the distance with the test value
-    for i in range(SAMPLE_NUMBER):
-        dist[i] = np.linalg.norm(X[i]-x_prime)
-        dist_temp[i] = np.linalg.norm(X[i]-x_prime)
+    knc = KNeighborsClassifier(n_neighbors=10)
+    knc.fit(X_train, y_train)
+    y_predict = knc.predict(X_test)
 
-    #2.Find the index of the K-nearest-Neighbors
-    for i in range(K):
-        min_temp =  min(dist_temp)
-        index_neighbor[i] = dist_temp.index(min_temp)
-        dist_temp[index_neighbor[i]] = float('inf')
+    n_errors = sum([1 if y_test[i] != y_predict[i] else 0 for i in range(0, len(y_test))])
 
-    #3.Compute the proportion of sample of each class among
-    #the k-nearest-neighbor
-    #Works only if there are two classes
-    class0 = 0
-    class1 = 0
-    for i in range(K):
-        if y[index_neighbor[i]]:
-            class1 +=1
-        else:
-            class0 +=1
+    print("Error percentage : {}%".format(n_errors/len(X_test)))
 
-    #4.Prediction
-
-    if class0 > class1:
-        y_prime = 0
-    elif class0 < class1:
-        y_prime = 1
-    else:
-        #if the probability is the same
-        y_prime = random.randint(0,1)
-        
-        
         
     
         
