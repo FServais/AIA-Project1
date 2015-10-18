@@ -87,7 +87,7 @@ if __name__ == "__main__":
         error[max_depth] = compare(np.concatenate((y_train_predict, y_dtc)), y)/SAMPLE_NUMBER
 
     min_error_depth = min(error, key=error.get)
-    print("Min error : ", error[min_error_depth], "for depth = ", min_error_depth)
+    print("Min error for depth = {}".format(min_error_depth))
 
     plt.figure()
     plt.title("Error on the testing set induced by the model")
@@ -97,43 +97,11 @@ if __name__ == "__main__":
     plt.savefig("error_max_depth.pdf")
 
     # 4.
-    decisionTreeClassifier = DecisionTreeClassifier()
+    N_FOLDS = 10
+    decisionTreeClassifier = DecisionTreeClassifier(random_state=get_random_state())
     parameters = {'max_depth': [i for i in range(1, 200)] + [200]}
-    grid = grid_search.GridSearchCV(estimator=decisionTreeClassifier, param_grid=parameters, cv=10)
+    grid = grid_search.GridSearchCV(estimator=decisionTreeClassifier, param_grid=parameters, cv=N_FOLDS)
 
     grid.fit(X_train, y_train)
-    grid.predict(X_test)
 
-    print("Max score : ", grid.best_score_, "for depth = ", grid.best_estimator_.max_depth)
-
-
-    # max_depths = [i for i in range(1, 200)] + [200]
-    # N_FOLDS = 10
-    # scores = {}
-    # for max_depth in max_depths:
-    #     decisionTreeClassifier = DecisionTreeClassifier(random_state=get_random_state(), max_depth=max_depth)
-    #     kf = cross_validation.KFold(n=SAMPLE_NUMBER, n_folds=N_FOLDS, random_state=get_random_state())
-    #
-    #     scores_per_depth = []
-    #
-    #     for train_indices, test_indices in kf:
-    #         X_train, X_test = X[train_indices], X[test_indices]
-    #         y_train, y_test = y[train_indices], y[test_indices]
-    #
-    #         decisionTreeClassifier.fit(X_train, y_train)
-    #
-    #         y_predict = decisionTreeClassifier.predict(X_test)
-    #
-    #         scores_per_depth.append(decisionTreeClassifier.score(X_test, y_test))
-    #
-    #     scores[max_depth] = np.mean(scores_per_depth)
-    #
-    # max_scores_depth = max(scores, key=scores.get)
-    # print("Max scores : ", scores[max_scores_depth], "for depth = ", max_scores_depth)
-    #
-    # plt.figure()
-    # plt.title("Scores on the testing set induced by the model")
-    # plt.plot(max_depths, list(scores.values()))
-    # plt.xlabel("Value of max_depth")
-    # plt.savefig("scores_max_depth.pdf")
-    # plt.ylabel("Scores (%)")
+    print("Max score for depth = {}".format(grid.best_estimator_.max_depth))
