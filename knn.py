@@ -17,6 +17,16 @@ from sklearn.base import ClassifierMixin
 from data import make_data
 from plot import plot_boundary
 
+def euclidean_distance(p1, p2):
+    """Compute the Euclidean distance between 2 points
+
+    Parameters
+    ----------
+    p1, p2: Numpy arrays, having the same dimensions.
+            Points between which the distance is computed
+
+    """
+    return np.linalg.norm(p1 - p2)
 
 class KNeighborsClassifier(BaseEstimator, ClassifierMixin):
     def __init__(self, n_neighbors=1):
@@ -29,6 +39,7 @@ class KNeighborsClassifier(BaseEstimator, ClassifierMixin):
 
         """
         self.n_neighbors = n_neighbors
+        self.samples = {}
 
     def fit(self, X, y):
         """Fit a k-nn model using the training set (X, y).
@@ -61,6 +72,8 @@ class KNeighborsClassifier(BaseEstimator, ClassifierMixin):
             raise ValueError("The number of samples differs between X and y")
 
         # TODO your code here.
+        for i in len(y):
+            self.samples[tuple(X[i])] = y[i]
 
         return self
 
@@ -103,26 +116,26 @@ if __name__ == "__main__":
     SAMPLE_NUMBER = 200
     K = 15 #Random ?
     x_prime = [0,0] #Random ?
-    
+
     dist = [0]*SAMPLE_NUMBER
     dist_temp = [0]*SAMPLE_NUMBER
     index_neighbor = [0]*K
-    
+
     # FIRST PART
     X, y = make_data(n_samples=SAMPLE_NUMBER)
-    
+
     #1.Compute all the distance with the test value
-    for i in range(SAMPLE_NUMBER):   
+    for i in range(SAMPLE_NUMBER):
         dist[i] = np.linalg.norm(X[i]-x_prime)
         dist_temp[i] = np.linalg.norm(X[i]-x_prime)
-    
+
     #2.Find the index of the K-nearest-Neighbors
     for i in range(K):
-        min_temp =  min(dist_temp)        
+        min_temp =  min(dist_temp)
         index_neighbor[i] = dist_temp.index(min_temp)
         dist_temp[index_neighbor[i]] = float('inf')
-        
-    #3.Compute the proportion of sample of each class among 
+
+    #3.Compute the proportion of sample of each class among
     #the k-nearest-neighbor
     #Works only if there are two classes
     class0 = 0
@@ -132,15 +145,15 @@ if __name__ == "__main__":
             class1 +=1
         else:
             class0 +=1
-            
+
     #4.Prediction
-    
+
     if class0 > class1:
         y_prime = 0
     elif class0 < class1:
         y_prime = 1
     else:
-        #if the probability is the same 
+        #if the probability is the same
         y_prime = random.randint(0,1)
         
         
