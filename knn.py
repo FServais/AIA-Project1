@@ -7,12 +7,15 @@ from __future__ import division
 from __future__ import unicode_literals
 # Only py3 print
 from __future__ import print_function
+from matplotlib.colors import ListedColormap
 
 import numpy as np
 import random
 
 from sklearn.base import BaseEstimator
 from sklearn.base import ClassifierMixin
+
+from sklearn.neighbors import KNeighborsClassifier
 
 from data import make_data
 from plot import plot_boundary
@@ -21,6 +24,9 @@ from utils import get_dataset
 from utils import get_random_state
 
 import operator
+
+from matplotlib import pyplot as plt
+
 
 def euclidean_distance(p1, p2):
     """Compute the Euclidean distance between 2 points
@@ -33,7 +39,7 @@ def euclidean_distance(p1, p2):
     """
     return np.linalg.norm(p1 - p2)
 
-class KNeighborsClassifier(BaseEstimator, ClassifierMixin):
+class KNeighborsClassifier_homemade(BaseEstimator, ClassifierMixin):
     def __init__(self, n_neighbors=1):
         """K-nearest classifier classifier
 
@@ -142,40 +148,28 @@ class KNeighborsClassifier(BaseEstimator, ClassifierMixin):
 if __name__ == "__main__":
     # (Question 2): K-nearest-neighbors
 
+    # 1.
     TRAIN_SET_SAMPLE_NUM = 150
     X, y = get_dataset(2000)
 
     X_train, y_train = X[:TRAIN_SET_SAMPLE_NUM], y[:TRAIN_SET_SAMPLE_NUM]
     X_test, y_test = X[TRAIN_SET_SAMPLE_NUM:], y[TRAIN_SET_SAMPLE_NUM:]
 
-    knc = KNeighborsClassifier(n_neighbors=10)
+    knc = KNeighborsClassifier_homemade(n_neighbors=1)
     knc.fit(X_train, y_train)
     y_predict = knc.predict(X_test)
 
     n_errors = sum([1 if y_test[i] != y_predict[i] else 0 for i in range(0, len(y_test))])
+    print("[Q2-1] Error percentage : {}%".format(n_errors/len(X_test)))
 
-    print("Error percentage : {}%".format(n_errors/len(X_test)))
+    # 2.
+    oneNN = KNeighborsClassifier(n_neighbors=1)
+    oneNN.fit(X_train, y_train)
+    y_predict = oneNN.predict(X_test)
 
-        
-    
-        
-        
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    plot_boundary("2-2-Ground-Truth", oneNN, X_test, y_test, title="Ground Truth data")
+    plot_boundary("2-2-Prediction", oneNN, X_test, y_predict, title="Prediction data")
+
+    n_errors = sum([1 if y_test[i] != y_predict[i] else 0 for i in range(0, len(y_test))])
+    print("[Q2-2] Error percentage : {}%".format(n_errors/len(X_test)))
+
