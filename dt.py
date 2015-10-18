@@ -65,7 +65,7 @@ if __name__ == "__main__":
 
 
     # 2.
-    max_depths = [1] + [i for i in range(20,TRAIN_SET_SAMPLE_NUM,30)] + [TRAIN_SET_SAMPLE_NUM]
+    max_depths = [1, 5, 10, 20, 30, 50]
     for max_depth in max_depths:
         decisionTreeClassifier = DecisionTreeClassifier(random_state=get_random_state(), max_depth=max_depth)
         decisionTreeClassifier.fit(X_train, y_train)
@@ -76,25 +76,35 @@ if __name__ == "__main__":
 
     # 3.
     # TODO: Meaningful to have a step of 1 ?
-    max_depths = [i for i in range(1, TRAIN_SET_SAMPLE_NUM)] + [TRAIN_SET_SAMPLE_NUM]
-    error = {}
+    max_depths = [i for i in range(1, TRAIN_SET_SAMPLE_NUM+1)]
+    error_training = {}
+    error_testing = {}
+
     for max_depth in max_depths:
         decisionTreeClassifier = DecisionTreeClassifier(random_state=get_random_state(), max_depth=max_depth)
         decisionTreeClassifier.fit(X_train, y_train)
-        y_dtc = decisionTreeClassifier.predict(X_test)
+        # Learning sample
         y_train_predict = decisionTreeClassifier.predict(X_train)
+        error_training[max_depth] = compare(y_train_predict, y_train)/len(y_train)
 
-        error[max_depth] = compare(np.concatenate((y_train_predict, y_dtc)), y)/SAMPLE_NUMBER
+        # Testing sample
+        y_dtc = decisionTreeClassifier.predict(X_test)
+        error_testing[max_depth] = compare(y_dtc, y_test)/len(y_test)
 
-    min_error_depth = min(error, key=error.get)
-    print("Min error for depth = {}".format(min_error_depth))
+    min_error_depth = min(error_training, key=error_training.get)
+    print("[Q3 - Training set] Min error for depth = {}".format(min_error_depth))
+
+    min_error_depth = min(error_testing, key=error_testing.get)
+    print("[Q3 - Testing set] Min error for depth = {}".format(min_error_depth))
 
     plt.figure()
-    plt.title("Error on the testing set induced by the model")
-    plt.plot(max_depths, list(error.values()))
+    plt.title("Error on the learning and testing sets induced by the model")
+    tr, = plt.plot(max_depths, list(error_training.values()), label="Training set")
+    ts, = plt.plot(max_depths, list(error_testing.values()), label="Testing set")
+    plt.legend(handles=[tr, ts])
     plt.xlabel("Value of max_depth")
     plt.ylabel("Error (%)")
-    plt.savefig("error_max_depth.pdf")
+    plt.savefig("1-3-error_max_depth.pdf")
 
     # 4.
     N_FOLDS = 10
@@ -104,4 +114,4 @@ if __name__ == "__main__":
 
     grid.fit(X_train, y_train)
 
-    print("Max score for depth = {}".format(grid.best_estimator_.max_depth))
+    print("[Q4] Max score for depth = {}".format(grid.best_estimator_.max_depth))
