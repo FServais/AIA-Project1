@@ -49,13 +49,12 @@ if __name__ == "__main__":
     TRAIN_SET_SAMPLE_NUM = 150
 
     X, y = get_dataset(SAMPLE_NUMBER)
-    random_state = get_random_state()
 
     X_train, y_train = X[:TRAIN_SET_SAMPLE_NUM], y[:TRAIN_SET_SAMPLE_NUM]
     X_test, y_test = X[TRAIN_SET_SAMPLE_NUM:], y[TRAIN_SET_SAMPLE_NUM:]
 
     # 1.
-    decisionTreeClassifier = DecisionTreeClassifier(random_state=random_state)
+    decisionTreeClassifier = DecisionTreeClassifier(random_state=get_random_state())
     decisionTreeClassifier.fit(X_train, y_train)
     y_dtc = decisionTreeClassifier.predict(X_test)
 
@@ -65,10 +64,9 @@ if __name__ == "__main__":
 
 
     # 2.
-
     max_depths = [1] + [i for i in range(20,TRAIN_SET_SAMPLE_NUM,30)] + [TRAIN_SET_SAMPLE_NUM]
     for max_depth in max_depths:
-        decisionTreeClassifier = DecisionTreeClassifier(random_state=random_state, max_depth=max_depth)
+        decisionTreeClassifier = DecisionTreeClassifier(random_state=get_random_state(), max_depth=max_depth)
         decisionTreeClassifier.fit(X_train, y_train)
         y_dtc = decisionTreeClassifier.predict(X_test)
 
@@ -76,19 +74,55 @@ if __name__ == "__main__":
         plot_boundary("Reality (%s)" % str(max_depth), decisionTreeClassifier, X_test, y_test, title="Real data (%s)" % str(max_depth))
 
     # 3.
-
-    max_depths = [1] + [i for i in range(20,TRAIN_SET_SAMPLE_NUM,5)] + [TRAIN_SET_SAMPLE_NUM]
-    error = []
+    # TODO: Meaningful to have a step of 1 ?
+    max_depths = [i for i in range(1, TRAIN_SET_SAMPLE_NUM)] + [TRAIN_SET_SAMPLE_NUM]
+    error = {}
     for max_depth in max_depths:
-        decisionTreeClassifier = DecisionTreeClassifier(random_state=random_state, max_depth=max_depth)
+        decisionTreeClassifier = DecisionTreeClassifier(random_state=get_random_state(), max_depth=max_depth)
         decisionTreeClassifier.fit(X_train, y_train)
         y_dtc = decisionTreeClassifier.predict(X_test)
+        y_train_predict = decisionTreeClassifier.predict(X_train)
 
-        error.append((compare(y_dtc, y_test))/(SAMPLE_NUMBER-TRAIN_SET_SAMPLE_NUM))
+        error[max_depth] = compare(np.concatenate((y_train_predict, y_dtc)), y)/SAMPLE_NUMBER
+
+    min_error_depth = min(error, key=error.get)
+    print("Min error : ", error[min_error_depth], "for depth = ", min_error_depth)
 
     plt.figure()
     plt.title("Error on the testing set induced by the model")
-    plt.plot(max_depths, error)
+    plt.plot(max_depths, list(error.values()))
     plt.xlabel("Value of max_depth")
     plt.ylabel("Error (%)")
     plt.savefig("error_max_depth.pdf")
+
+    # 4.
+    max_depths = [i for i in range(1, 200)] + [200]
+    N_FOLDS = 10
+    scores = {}
+    for max_depth in max_depths:
+        decisionTreeClassifier = DecisionTreeClassifier(random_state=get_random_state(), max_depth=max_depth)
+        kf = cross_validation.KFold(n=SAMPLE_NUMBER, n_folds=N_FOLDS, random_state=get_random_state())
+
+        scores_per_depth = []
+
+        for train_indices, test_indices in kf:
+            X_train, X_test = X[train_indices], X[test_indices]
+            y_train, y_test = y[train_indices], y[test_indices]
+
+            decisionTreeClassifier.fit(X_train, y_train)
+
+            y_predict = decisionTreeClassifier.predict(X_test)
+
+            scores_per_depth.append(decisionTreeClassifier.score(X_test, y_test))
+
+        scores[max_depth] = np.mean(scores_per_depth)
+
+    max_scores_depth = max(scores, key=scores.get)
+    print("Max scores : ", scores[max_scores_depth], "for depth = ", max_scores_depth)
+
+    plt.figure()
+    plt.title("Scores on the testing set induced by the model")
+    plt.plot(max_depths, list(scores.values()))
+    plt.xlabel("Value of max_depth")
+    plt.savefig("scores_max_depth.pdf")
+    plt.ylabel("Scores (%)")
