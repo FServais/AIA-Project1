@@ -11,6 +11,7 @@ from matplotlib.colors import ListedColormap
 
 import numpy as np
 import random
+from sklearn import grid_search
 
 from sklearn.base import BaseEstimator
 from sklearn.base import ClassifierMixin
@@ -205,3 +206,13 @@ if __name__ == "__main__":
     plt.xlabel("Value of n_neighbors")
     plt.ylabel("Error (%)")
     plt.savefig("2-4-error_n_neighbors.pdf")
+
+    # 5.
+    N_FOLDS = 10
+    oneNN = KNeighborsClassifier()
+    parameters = {'n_neighbors': [i for i in range(1, (N_FOLDS-1)*TRAIN_SET_SAMPLE_NUM//N_FOLDS)]}
+    grid = grid_search.GridSearchCV(estimator=oneNN, param_grid=parameters, cv=N_FOLDS)
+
+    grid.fit(X_train, y_train)
+
+    print("[Q5] Max score for N = {}".format(grid.best_estimator_.n_neighbors))
