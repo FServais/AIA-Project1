@@ -22,6 +22,7 @@ from plot import plot_boundary
 
 from utils import get_dataset
 from utils import get_random_state
+from utils import compare
 
 import operator
 
@@ -147,14 +148,14 @@ class KNeighborsClassifier_homemade(BaseEstimator, ClassifierMixin):
 
 if __name__ == "__main__":
     # (Question 2): K-nearest-neighbors
-
-    # 1.
+    SAMPLE_NUMBER = 2000
     TRAIN_SET_SAMPLE_NUM = 150
-    X, y = get_dataset(2000)
+    X, y = get_dataset(SAMPLE_NUMBER)
 
     X_train, y_train = X[:TRAIN_SET_SAMPLE_NUM], y[:TRAIN_SET_SAMPLE_NUM]
     X_test, y_test = X[TRAIN_SET_SAMPLE_NUM:], y[TRAIN_SET_SAMPLE_NUM:]
 
+    # 1.
     knc = KNeighborsClassifier_homemade(n_neighbors=1)
     knc.fit(X_train, y_train)
     y_predict = knc.predict(X_test)
@@ -173,3 +174,34 @@ if __name__ == "__main__":
     n_errors = sum([1 if y_test[i] != y_predict[i] else 0 for i in range(0, len(y_test))])
     print("[Q2-2] Error percentage : {}%".format(n_errors/len(X_test)))
 
+    # 3.
+    n_neighbors = [1, 2, 4, 7, 10, 30, 90, 150]
+    for n in n_neighbors:
+        oneNN = KNeighborsClassifier(n_neighbors=n)
+        oneNN.fit(X_train, y_train)
+        y_predict = oneNN.predict(X_test)
+
+        plot_boundary("2-3-Prediction-%s" % str(n), oneNN, X_test, y_predict, title="Prediction data")
+
+    # 4.
+    n_neighbors = [i for i in range(1,TRAIN_SET_SAMPLE_NUM)]
+    error_training = {}
+    error_testing = {}
+
+    for n in n_neighbors:
+        oneNN = KNeighborsClassifier(n_neighbors=n)
+        oneNN.fit(X_train, y_train)
+        y_predict = oneNN.predict(X_test)
+        y_train_predict = oneNN.predict(X_train)
+
+        error_training[n] = compare(y_train, y_train_predict)/len(y_train)
+        error_testing[n] = compare(y_test, y_predict)/len(y_test)
+
+    plt.figure()
+    plt.title("Error on the learning and testing sets induced by the model")
+    tr, = plt.plot(n_neighbors, list(error_training.values()), label="Training set")
+    ts, = plt.plot(n_neighbors, list(error_testing.values()), label="Testing set")
+    plt.legend(handles=[tr, ts])
+    plt.xlabel("Value of n_neighbors")
+    plt.ylabel("Error (%)")
+    plt.savefig("2-4-error_n_neighbors.pdf")
