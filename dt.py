@@ -14,6 +14,7 @@ from matplotlib import pyplot as plt
 from sklearn.tree import DecisionTreeClassifier
 
 from sklearn import cross_validation
+from sklearn import grid_search
 
 from plot import plot_boundary
 from utils import get_dataset
@@ -96,33 +97,43 @@ if __name__ == "__main__":
     plt.savefig("error_max_depth.pdf")
 
     # 4.
-    max_depths = [i for i in range(1, 200)] + [200]
-    N_FOLDS = 10
-    scores = {}
-    for max_depth in max_depths:
-        decisionTreeClassifier = DecisionTreeClassifier(random_state=get_random_state(), max_depth=max_depth)
-        kf = cross_validation.KFold(n=SAMPLE_NUMBER, n_folds=N_FOLDS, random_state=get_random_state())
+    decisionTreeClassifier = DecisionTreeClassifier()
+    parameters = {'max_depth': [i for i in range(1, 200)] + [200]}
+    grid = grid_search.GridSearchCV(estimator=decisionTreeClassifier, param_grid=parameters, cv=10)
 
-        scores_per_depth = []
+    grid.fit(X_train, y_train)
+    grid.predict(X_test)
 
-        for train_indices, test_indices in kf:
-            X_train, X_test = X[train_indices], X[test_indices]
-            y_train, y_test = y[train_indices], y[test_indices]
+    print("Max score : ", grid.best_score_, "for depth = ", grid.best_estimator_.max_depth)
 
-            decisionTreeClassifier.fit(X_train, y_train)
 
-            y_predict = decisionTreeClassifier.predict(X_test)
-
-            scores_per_depth.append(decisionTreeClassifier.score(X_test, y_test))
-
-        scores[max_depth] = np.mean(scores_per_depth)
-
-    max_scores_depth = max(scores, key=scores.get)
-    print("Max scores : ", scores[max_scores_depth], "for depth = ", max_scores_depth)
-
-    plt.figure()
-    plt.title("Scores on the testing set induced by the model")
-    plt.plot(max_depths, list(scores.values()))
-    plt.xlabel("Value of max_depth")
-    plt.savefig("scores_max_depth.pdf")
-    plt.ylabel("Scores (%)")
+    # max_depths = [i for i in range(1, 200)] + [200]
+    # N_FOLDS = 10
+    # scores = {}
+    # for max_depth in max_depths:
+    #     decisionTreeClassifier = DecisionTreeClassifier(random_state=get_random_state(), max_depth=max_depth)
+    #     kf = cross_validation.KFold(n=SAMPLE_NUMBER, n_folds=N_FOLDS, random_state=get_random_state())
+    #
+    #     scores_per_depth = []
+    #
+    #     for train_indices, test_indices in kf:
+    #         X_train, X_test = X[train_indices], X[test_indices]
+    #         y_train, y_test = y[train_indices], y[test_indices]
+    #
+    #         decisionTreeClassifier.fit(X_train, y_train)
+    #
+    #         y_predict = decisionTreeClassifier.predict(X_test)
+    #
+    #         scores_per_depth.append(decisionTreeClassifier.score(X_test, y_test))
+    #
+    #     scores[max_depth] = np.mean(scores_per_depth)
+    #
+    # max_scores_depth = max(scores, key=scores.get)
+    # print("Max scores : ", scores[max_scores_depth], "for depth = ", max_scores_depth)
+    #
+    # plt.figure()
+    # plt.title("Scores on the testing set induced by the model")
+    # plt.plot(max_depths, list(scores.values()))
+    # plt.xlabel("Value of max_depth")
+    # plt.savefig("scores_max_depth.pdf")
+    # plt.ylabel("Scores (%)")
