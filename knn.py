@@ -163,7 +163,7 @@ if __name__ == "__main__":
     y_predict = knc.predict(X_test)
 
     n_errors = sum([1 if y_test[i] != y_predict[i] else 0 for i in range(0, len(y_test))])
-    print("[Q2-1] Error percentage : {}%".format(n_errors/len(X_test)))
+    print("[Q2-1] Error percentage : {}%".format(n_errors*100/len(X_test)))
 
     # 2.
     oneNN = sklearn.neighbors.KNeighborsClassifier(n_neighbors=1)
@@ -174,7 +174,7 @@ if __name__ == "__main__":
     plot_boundary("2-2-Prediction", oneNN, X_test, y_predict, title="Prediction data")
 
     n_errors = sum([1 if y_test[i] != y_predict[i] else 0 for i in range(0, len(y_test))])
-    print("[Q2-2] Error percentage : {}%".format(n_errors/len(X_test)))
+    print("[Q2-2] Error percentage : {}%".format(n_errors*100/len(X_test)))
 
     # 3.
     n_neighbors = [1, 2, 4, 7, 10, 30, 90, 150]
@@ -197,8 +197,8 @@ if __name__ == "__main__":
         y_predict = nearest_neighb_class.predict(X_test)
         y_train_predict = nearest_neighb_class.predict(X_train)
 
-        error_training[n] = compare(y_train, y_train_predict)/len(y_train)
-        error_testing[n] = compare(y_test, y_predict)/len(y_test)
+        error_training[n] = compare(y_train, y_train_predict)*100/len(y_train)
+        error_testing[n] = compare(y_test, y_predict)*100/len(y_test)
 
     plt.figure()
     plt.title("Error on the learning and testing sets induced by the model")
