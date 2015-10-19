@@ -12,6 +12,7 @@ from matplotlib.colors import ListedColormap
 import numpy as np
 import random
 from sklearn import grid_search
+import sklearn
 
 from sklearn.base import BaseEstimator
 from sklearn.base import ClassifierMixin
@@ -41,7 +42,7 @@ def euclidean_distance(p1, p2):
     """
     return np.linalg.norm(p1 - p2)
 
-class KNeighborsClassifier_homemade(BaseEstimator, ClassifierMixin):
+class KNeighborsClassifier(BaseEstimator, ClassifierMixin):
     def __init__(self, n_neighbors=1):
         """K-nearest classifier classifier
 
@@ -157,7 +158,7 @@ if __name__ == "__main__":
     X_test, y_test = X[TRAIN_SET_SAMPLE_NUM:], y[TRAIN_SET_SAMPLE_NUM:]
 
     # 1.
-    knc = KNeighborsClassifier_homemade(n_neighbors=1)
+    knc = KNeighborsClassifier(n_neighbors=1)
     knc.fit(X_train, y_train)
     y_predict = knc.predict(X_test)
 
@@ -165,7 +166,7 @@ if __name__ == "__main__":
     print("[Q2-1] Error percentage : {}%".format(n_errors/len(X_test)))
 
     # 2.
-    oneNN = KNeighborsClassifier(n_neighbors=1)
+    oneNN = sklearn.neighbors.KNeighborsClassifier(n_neighbors=1)
     oneNN.fit(X_train, y_train)
     y_predict = oneNN.predict(X_test)
 
@@ -178,22 +179,23 @@ if __name__ == "__main__":
     # 3.
     n_neighbors = [1, 2, 4, 7, 10, 30, 90, 150]
     for n in n_neighbors:
-        oneNN = KNeighborsClassifier(n_neighbors=n)
-        oneNN.fit(X_train, y_train)
-        y_predict = oneNN.predict(X_test)
+        nearest_neighb_class = sklearn.neighbors.KNeighborsClassifier(n_neighbors=n)
+        nearest_neighb_class.fit(X_train, y_train)
+        y_predict = nearest_neighb_class.predict(X_test)
 
-        plot_boundary("2-3-Prediction-%s" % str(n), oneNN, X_test, y_predict, title="Prediction data")
+        plot_boundary("2-3-Prediction-%s" % str(n), nearest_neighb_class, X_test, y_predict, title="Prediction data")
 
+    plot_boundary("2-3-Training-set", nearest_neighb_class, X_train, y_train, title="Training set boundaries")
     # 4.
     n_neighbors = [i for i in range(1,TRAIN_SET_SAMPLE_NUM)]
     error_training = {}
     error_testing = {}
 
     for n in n_neighbors:
-        oneNN = KNeighborsClassifier(n_neighbors=n)
-        oneNN.fit(X_train, y_train)
-        y_predict = oneNN.predict(X_test)
-        y_train_predict = oneNN.predict(X_train)
+        nearest_neighb_class = sklearn.neighbors.KNeighborsClassifier(n_neighbors=n)
+        nearest_neighb_class.fit(X_train, y_train)
+        y_predict = nearest_neighb_class.predict(X_test)
+        y_train_predict = nearest_neighb_class.predict(X_train)
 
         error_training[n] = compare(y_train, y_train_predict)/len(y_train)
         error_testing[n] = compare(y_test, y_predict)/len(y_test)
@@ -209,9 +211,9 @@ if __name__ == "__main__":
 
     # 5.
     N_FOLDS = 10
-    oneNN = KNeighborsClassifier()
+    nearest_neighb_class = sklearn.neighbors.KNeighborsClassifier()
     parameters = {'n_neighbors': [i for i in range(1, (N_FOLDS-1)*TRAIN_SET_SAMPLE_NUM//N_FOLDS)]}
-    grid = grid_search.GridSearchCV(estimator=oneNN, param_grid=parameters, cv=N_FOLDS)
+    grid = grid_search.GridSearchCV(estimator=nearest_neighb_class, param_grid=parameters, cv=N_FOLDS)
 
     grid.fit(X_train, y_train)
 
