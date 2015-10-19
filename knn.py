@@ -217,4 +217,4 @@ if __name__ == "__main__":
 
     grid.fit(X_train, y_train)
 
-    print("[Q5] Max score for N = {}".format(grid.best_estimator_.n_neighbors))
+    print("[Q5] Max score ({}) for N = {}".format(grid.best_score_, grid.best_estimator_.n_neighbors))
