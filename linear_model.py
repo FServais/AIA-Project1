@@ -58,5 +58,5 @@ if __name__ == "__main__":
     
     #Results
     
-    print("[Q3-3] Error percentage without transformation : {}%".format(error_without_transf*100/len(y_test)))
+    print("[Q3-3] Error percentage without transformation : {}%".format(error_without_transf/len(y_test)))
     
