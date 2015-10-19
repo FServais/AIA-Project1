@@ -63,11 +63,11 @@ if __name__ == "__main__":
         decisionTreeClassifier.fit(X_train, y_train)
         # Learning sample
         y_train_predict = decisionTreeClassifier.predict(X_train)
-        error_training[max_depth] = compare(y_train_predict, y_train)/len(y_train)
+        error_training[max_depth] = compare(y_train_predict, y_train)*100/len(y_train)
 
         # Testing sample
         y_dtc = decisionTreeClassifier.predict(X_test)
-        error_testing[max_depth] = compare(y_dtc, y_test)/len(y_test)
+        error_testing[max_depth] = compare(y_dtc, y_test)*100/len(y_test)
 
     min_error_depth = min(error_training, key=error_training.get)
     print("[Q3 - Training set] Min error for depth = {}".format(min_error_depth))
