@@ -43,8 +43,8 @@ if __name__ == "__main__":
     # Plot
     plot_boundary("3-1-Ground-Truth", ridgeClassifier, X_test, y_test, title="Ground Truth data")
     plot_boundary("3-1-Prediction", ridgeClassifier, X_test, y_rc, title="Prediction data")
-    
-    #TODO: 
+
+    #TODO:
     #2.
     r, theta = to_polar_coordinates(X[:, 0], X[:, 1])
     # temp = np.arctan2(X[:, 1], X[:, 0])
