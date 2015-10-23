@@ -41,7 +41,6 @@ if __name__ == "__main__":
     plot_boundary("1-1-Ground-Truth", decisionTreeClassifier, X_test, y_test, title="Ground Truth data")
     plot_boundary("1-1-Prediction", decisionTreeClassifier, X_test, y_dtc, title="Prediction data")
 
-
     # 2.
     max_depths = [i for i in range(1, 20)]
     training_scores = []
@@ -96,4 +95,4 @@ if __name__ == "__main__":
 
     grid.fit(X, y)
 
-    print("[Q4] Max score for depth = {}".format(grid.best_estimator_.max_depth))
+    print("[Q4] Max score ({}) for depth = {}".format(grid.best_score_, grid.best_estimator_.max_depth))
