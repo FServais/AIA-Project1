@@ -43,18 +43,22 @@ if __name__ == "__main__":
 
 
     # 2.
-    max_depths = [1, 5, 10, 20, 30, 50]
+    max_depths = [i for i in range(1, 14)]
+    training_scores = []
     for max_depth in max_depths:
         decisionTreeClassifier = DecisionTreeClassifier(random_state=get_random_state(), max_depth=max_depth)
         decisionTreeClassifier.fit(X_train, y_train)
         y_dtc = decisionTreeClassifier.predict(X_test)
 
         # Plot
-        plot_boundary("Reality (%s)" % str(max_depth), decisionTreeClassifier, X_test, y_test, title="Real data (%s)" % str(max_depth))
+        plot_boundary("1-2-Max-Depth_%s" % str(max_depth), decisionTreeClassifier, X_test, y_test, title="Real data with max_depth = %s" % str(max_depth))
+
+        training_scores.append(decisionTreeClassifier.score(X_train,y_train))
+
+    print("[Q2] Score = 1 for the training set with max_depth = {}".format(training_scores.index(1.0)+1))
 
     # 3.
-    # TODO: Meaningful to have a step of 1 ?
-    max_depths = [i for i in range(1, TRAIN_SET_SAMPLE_NUM+1)]
+    max_depths = [i for i in range(1, 20)]
     error_training = {}
     error_testing = {}
 
@@ -87,7 +91,7 @@ if __name__ == "__main__":
     # 4.
     N_FOLDS = 10
     decisionTreeClassifier = DecisionTreeClassifier(random_state=get_random_state())
-    parameters = {'max_depth': [i for i in range(1, 200)] + [200]}
+    parameters = {'max_depth': [i for i in range(1, TRAIN_SET_SAMPLE_NUM+1)]}
     grid = grid_search.GridSearchCV(estimator=decisionTreeClassifier, param_grid=parameters, cv=N_FOLDS)
 
     grid.fit(X_train, y_train)
