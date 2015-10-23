@@ -43,7 +43,7 @@ if __name__ == "__main__":
 
 
     # 2.
-    max_depths = [i for i in range(1, 14)]
+    max_depths = [i for i in range(1, 20)]
     training_scores = []
     for max_depth in max_depths:
         decisionTreeClassifier = DecisionTreeClassifier(random_state=get_random_state(), max_depth=max_depth)
@@ -94,6 +94,6 @@ if __name__ == "__main__":
     parameters = {'max_depth': [i for i in range(1, TRAIN_SET_SAMPLE_NUM+1)]}
     grid = grid_search.GridSearchCV(estimator=decisionTreeClassifier, param_grid=parameters, cv=N_FOLDS)
 
-    grid.fit(X_train, y_train)
+    grid.fit(X, y)
 
     print("[Q4] Max score for depth = {}".format(grid.best_estimator_.max_depth))

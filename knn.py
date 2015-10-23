@@ -228,6 +228,6 @@ if __name__ == "__main__":
     parameters = {'n_neighbors': [i for i in range(1, (N_FOLDS-1)*TRAIN_SET_SAMPLE_NUM//N_FOLDS)]}
     grid = grid_search.GridSearchCV(estimator=nearest_neighb_class, param_grid=parameters, cv=N_FOLDS)
 
-    grid.fit(X_train, y_train)
+    grid.fit(X, y)
 
     print("[Q5] Max score ({}) for N = {}".format(grid.best_score_, grid.best_estimator_.n_neighbors))
