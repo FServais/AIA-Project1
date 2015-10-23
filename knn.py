@@ -189,6 +189,8 @@ if __name__ == "__main__":
     n_errors = sum([1 if y_test[i] != y_predict[i] else 0 for i in range(0, len(y_test))])
     print("[Q2-2] Error percentage : {}%".format(n_errors*100/len(X_test)))
 
+    plot_boundary("2-2-Training-set", oneNN, X_train, y_train, title="Training set boundaries")
+
     # 3.
     n_neighbors = [1, 2, 4, 7, 10, 30, 90, 150]
     for n in n_neighbors:
@@ -198,7 +200,6 @@ if __name__ == "__main__":
 
         plot_boundary("2-3-Prediction-%s" % str(n), nearest_neighb_class, X_test, y_predict, title="Prediction data")
 
-    plot_boundary("2-3-Training-set", nearest_neighb_class, X_train, y_train, title="Training set boundaries")
     # 4.
     n_neighbors = [i for i in range(1,TRAIN_SET_SAMPLE_NUM)]
     error_training = {}
