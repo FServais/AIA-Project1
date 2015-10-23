@@ -171,64 +171,97 @@ if __name__ == "__main__":
     X_test, y_test = X[TRAIN_SET_SAMPLE_NUM:], y[TRAIN_SET_SAMPLE_NUM:]
 
     # 1.
-    knc = KNeighborsClassifier(n_neighbors=1)
-    knc.fit(X_train, y_train)
-    y_predict = knc.predict(X_test)
-
-    n_errors = sum([1 if y_test[i] != y_predict[i] else 0 for i in range(0, len(y_test))])
-    print("[Q2-1] Error percentage : {}%".format(n_errors*100/len(X_test)))
-
-    # 2.
-    oneNN = sklearn.neighbors.KNeighborsClassifier(n_neighbors=1)
-    oneNN.fit(X_train, y_train)
-    y_predict = oneNN.predict(X_test)
-
-    plot_boundary("2-2-Ground-Truth", oneNN, X_test, y_test, title="Ground Truth data")
-    plot_boundary("2-2-Prediction", oneNN, X_test, y_predict, title="Prediction data")
-
-    n_errors = sum([1 if y_test[i] != y_predict[i] else 0 for i in range(0, len(y_test))])
-    print("[Q2-2] Error percentage : {}%".format(n_errors*100/len(X_test)))
-
-    plot_boundary("2-2-Training-set", oneNN, X_train, y_train, title="Training set boundaries")
-
-    # 3.
-    n_neighbors = [1, 2, 4, 7, 10, 30, 90, 150]
-    for n in n_neighbors:
-        nearest_neighb_class = sklearn.neighbors.KNeighborsClassifier(n_neighbors=n)
-        nearest_neighb_class.fit(X_train, y_train)
-        y_predict = nearest_neighb_class.predict(X_test)
-
-        plot_boundary("2-3-Prediction-%s" % str(n), nearest_neighb_class, X_test, y_predict, title="Prediction data")
-
-    # 4.
-    n_neighbors = [i for i in range(1,TRAIN_SET_SAMPLE_NUM)]
-    error_training = {}
-    error_testing = {}
-
-    for n in n_neighbors:
-        nearest_neighb_class = sklearn.neighbors.KNeighborsClassifier(n_neighbors=n)
-        nearest_neighb_class.fit(X_train, y_train)
-        y_predict = nearest_neighb_class.predict(X_test)
-        y_train_predict = nearest_neighb_class.predict(X_train)
-
-        error_training[n] = compare(y_train, y_train_predict)*100/len(y_train)
-        error_testing[n] = compare(y_test, y_predict)*100/len(y_test)
-
-    plt.figure()
-    plt.title("Error on the learning and testing sets induced by the model")
-    tr, = plt.plot(n_neighbors, list(error_training.values()), label="Training set")
-    ts, = plt.plot(n_neighbors, list(error_testing.values()), label="Testing set")
-    plt.legend(handles=[tr, ts])
-    plt.xlabel("Value of n_neighbors")
-    plt.ylabel("Error (%)")
-    plt.savefig("2-4-error_n_neighbors.pdf")
-
+    # knc = KNeighborsClassifier(n_neighbors=1)
+    # knc.fit(X_train, y_train)
+    # y_predict = knc.predict(X_test)
+    #
+    # n_errors = compare(y_test, y_predict)
+    # print("[Q2-1] Error percentage : {}%".format(n_errors*100/len(X_test)))
+    #
+    # # 2.
+    # oneNN = sklearn.neighbors.KNeighborsClassifier(n_neighbors=1)
+    # oneNN.fit(X_train, y_train)
+    # y_predict = oneNN.predict(X_test)
+    #
+    # plot_boundary("2-2-Ground-Truth", oneNN, X_test, y_test, title="Ground Truth data")
+    # plot_boundary("2-2-Prediction", oneNN, X_test, y_predict, title="Prediction data")
+    #
+    # n_errors = compare(y_test, y_predict)
+    # print("[Q2-2] Error percentage : {}%".format(n_errors*100/len(X_test)))
+    #
+    # plot_boundary("2-2-Training-set", oneNN, X_train, y_train, title="Training set boundaries")
+    #
+    # # 3.
+    # n_neighbors = [1, 2, 4, 7, 10, 30, 90, 150]
+    # for n in n_neighbors:
+    #     nearest_neighb_class = sklearn.neighbors.KNeighborsClassifier(n_neighbors=n)
+    #     nearest_neighb_class.fit(X_train, y_train)
+    #     y_predict = nearest_neighb_class.predict(X_test)
+    #
+    #     plot_boundary("2-3-Prediction-%s" % str(n), nearest_neighb_class, X_test, y_predict, title="Prediction data")
+    #
+    # # 4.
+    # n_neighbors = [i for i in range(1,TRAIN_SET_SAMPLE_NUM)]
+    # error_training = {}
+    # error_testing = {}
+    #
+    # for n in n_neighbors:
+    #     nearest_neighb_class = sklearn.neighbors.KNeighborsClassifier(n_neighbors=n)
+    #     nearest_neighb_class.fit(X_train, y_train)
+    #     y_predict = nearest_neighb_class.predict(X_test)
+    #     y_train_predict = nearest_neighb_class.predict(X_train)
+    #
+    #     error_training[n] = compare(y_train, y_train_predict)*100/len(y_train)
+    #     error_testing[n] = compare(y_test, y_predict)*100/len(y_test)
+    #
+    # plt.figure()
+    # plt.title("Error on the learning and testing sets induced by the model")
+    # tr, = plt.plot(n_neighbors, list(error_training.values()), label="Training set")
+    # ts, = plt.plot(n_neighbors, list(error_testing.values()), label="Testing set")
+    # plt.legend(handles=[tr, ts])
+    # plt.xlabel("Value of n_neighbors")
+    # plt.ylabel("Error (%)")
+    # plt.savefig("2-4-error_n_neighbors.pdf")
+    #
     # 5.
     N_FOLDS = 10
     nearest_neighb_class = sklearn.neighbors.KNeighborsClassifier()
-    parameters = {'n_neighbors': [i for i in range(1, (N_FOLDS-1)*TRAIN_SET_SAMPLE_NUM//N_FOLDS)]}
+    parameters = {'n_neighbors': [i for i in range(1,60)] + [i for i in range(60, 1800, 100)]}
     grid = grid_search.GridSearchCV(estimator=nearest_neighb_class, param_grid=parameters, cv=N_FOLDS)
 
     grid.fit(X, y)
 
     print("[Q5] Max score ({}) for N = {}".format(grid.best_score_, grid.best_estimator_.n_neighbors))
+
+    # Error
+    grid_score = grid.grid_scores_
+
+    plt.figure()
+    plt.title("")
+    tr, = plt.plot(parameters["n_neighbors"], list(map(lambda x : x[1], grid_score)), label="Score depending on the number of neighbors, using 10-cross-validation")
+    plt.xlabel("Value of n_neighbors")
+    plt.ylabel("Score")
+    plt.savefig("error-10-cv.pdf")
+
+    # Error precise
+    nearest_neighb_class = sklearn.neighbors.KNeighborsClassifier()
+    parameters = {'n_neighbors': [i for i in range(1,120)]}
+    grid = grid_search.GridSearchCV(estimator=nearest_neighb_class, param_grid=parameters, cv=N_FOLDS)
+
+    grid.fit(X, y)
+
+    grid_score = grid.grid_scores_
+
+    plt.figure()
+    plt.title("")
+    tr, = plt.plot(parameters["n_neighbors"], list(map(lambda x : x[1], grid_score)), label="Score depending on the number of neighbors, using 10-cross-validation (between 1 and 120)")
+    plt.xlabel("Value of n_neighbors")
+    plt.ylabel("Score")
+    plt.savefig("error-10-cv-1-120.pdf")
+
+    # Plot 1-CV
+    nn = sklearn.neighbors.KNeighborsClassifier(n_neighbors=28)
+    nn.fit(X[:1800], y[:1800])
+
+    y_test = nn.predict(X[200:])
+    plot_boundary("test", nn, X[200:], y_test, title="test data")
