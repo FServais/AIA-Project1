@@ -105,28 +105,14 @@ class KNeighborsClassifier(BaseEstimator, ClassifierMixin):
         y : array of shape = [n_samples]
             The predicted classes, or the predict values.
         """
-
         y = []
-        for test_sample in X:
-            # Compute distances to each sample of the training set
-            distances = {}
-            for train_tuple, y_train in self.train_samples.items():
-                distances[train_tuple] = euclidean_distance(np.array(train_tuple), test_sample)
 
-            # Search k samples with the smallest distances
-            sorted_distances = sorted(distances.items(), key=operator.itemgetter(1))
-            k_nearest = sorted_distances[:self.n_neighbors]
+        probas = self.predict_proba(X)
+        list_of_classes = list(set(list(self.train_samples.values())))
 
-            # Compute proportions for each classes
-            classes = {}
-            for neighb, _ in k_nearest:
-                if self.train_samples[neighb] in classes:
-                    classes[self.train_samples[neighb]] += 1
-                else:
-                    classes[self.train_samples[neighb]] = 1
-
+        for proba_class in probas:
             # Predict
-            y.append(max(classes, key=classes.get))
+            y.append(list_of_classes[proba_class.index(max(proba_class))])
 
         return y
         pass
@@ -145,7 +131,34 @@ class KNeighborsClassifier(BaseEstimator, ClassifierMixin):
             The class probabilities of the input samples. Classes are ordered
             by lexicographic order.
         """
-        # TODO your code here.
+        probas = []
+        for test_sample in X:
+            # Compute distances to each sample of the training set
+            distances = {}
+            for train_tuple, y_train in self.train_samples.items():
+                distances[train_tuple] = euclidean_distance(np.array(train_tuple), test_sample)
+
+            # Search k samples with the smallest distances
+            sorted_distances = sorted(distances.items(), key=operator.itemgetter(1))
+            k_nearest = sorted_distances[:self.n_neighbors]
+
+            # Init classes
+            classes = {}
+            list_of_classes = list(set(list(self.train_samples.values())))
+            for c in list_of_classes:
+                classes[c] = 0
+
+            # Compute proportions for each classes
+            for neighb, _ in k_nearest:
+                if self.train_samples[neighb] in classes:
+                    classes[self.train_samples[neighb]] += 1
+                else:
+                    classes[self.train_samples[neighb]] = 1
+
+            total_num_classes = len(k_nearest)
+            probas.append(list(np.array(list(classes.values()))/total_num_classes))
+
+        return probas
         pass
 
 if __name__ == "__main__":
