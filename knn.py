@@ -176,7 +176,7 @@ if __name__ == "__main__":
     y_predict = knc.predict(X_test)
 
     n_errors = compare(y_test, y_predict)
-    print("[Q2-1] Error percentage : {}%".format(n_errors*100/len(X_test)))
+    print("[Q2-1] 1-NN - Error percentage : {}%".format(n_errors*100/len(X_test)))
 
     # 2.
     oneNN = sklearn.neighbors.KNeighborsClassifier(n_neighbors=1)
@@ -187,7 +187,7 @@ if __name__ == "__main__":
     plot_boundary("2-2-Prediction", oneNN, X_test, y_predict, title="Prediction data")
 
     n_errors = compare(y_test, y_predict)
-    print("[Q2-2] Error percentage : {}%".format(n_errors*100/len(X_test)))
+    print("[Q2-2] 1-NN - Error percentage : {}%".format(n_errors*100/len(X_test)))
 
     plot_boundary("2-2-Training-set", oneNN, X_train, y_train, title="Training set boundaries")
 
@@ -241,7 +241,7 @@ if __name__ == "__main__":
     tr, = plt.plot(parameters["n_neighbors"], list(map(lambda x : x[1], grid_score)), label="Score depending on the number of neighbors, using 10-cross-validation")
     plt.xlabel("Value of n_neighbors")
     plt.ylabel("Score")
-    plt.savefig("Q3-5-error-10-cv.pdf")
+    plt.savefig("3-5-error-10-cv.pdf")
 
     # Error precise
     nearest_neighb_class = sklearn.neighbors.KNeighborsClassifier()
@@ -257,11 +257,11 @@ if __name__ == "__main__":
     tr, = plt.plot(parameters["n_neighbors"], list(map(lambda x : x[1], grid_score)), label="Score depending on the number of neighbors, using 10-cross-validation (between 1 and 120)")
     plt.xlabel("Value of n_neighbors")
     plt.ylabel("Score")
-    plt.savefig("Q3-5-error-10-cv-1-120.pdf")
+    plt.savefig("3-5-error-10-cv-1-120.pdf")
 
     # Plot 1-CV
     nn = sklearn.neighbors.KNeighborsClassifier(n_neighbors=28)
     nn.fit(X[:1800], y[:1800])
 
     y_test = nn.predict(X[200:])
-    plot_boundary("Q3-5-28-NN-Boundary", nn, X[200:], y_test, title="28-NN boundaries for 1 iteration of 10-CV")
+    plot_boundary("3-5-28-NN-Boundary", nn, X[200:], y_test, title="28-NN boundaries for 1 iteration of 10-CV")
