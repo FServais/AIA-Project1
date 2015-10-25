@@ -49,13 +49,13 @@ if __name__ == "__main__":
         X_pol[i,0] = np.sqrt(X[i,0]**2+X[i,1]**2)        
         X_pol[i,1] = np.arctan2(X[i,1],X[i,0])
         
-        if X_pol[i,1] <= X_pol[i,0] - 3./2*np.pi:
+        if X_pol[i,1] <= X_pol[i,0] - 1./2*np.pi:
             
-            if X_pol[i,1] <= X_pol[i,0] - 7./2*np.pi:
+            if X_pol[i,1] <= X_pol[i,0] - 5./2*np.pi:
                 X_pol[i,1] += 4*np.pi
                 continue
             X_pol[i,1] += 2*np.pi
-         
+        
     X_train_pol, y_train_pol = X_pol[:TRAIN_SET_SAMPLE_NUM], y_pol[:TRAIN_SET_SAMPLE_NUM]
     X_test_pol, y_test_pol = X_pol[TRAIN_SET_SAMPLE_NUM:], y_pol[TRAIN_SET_SAMPLE_NUM:]
     
